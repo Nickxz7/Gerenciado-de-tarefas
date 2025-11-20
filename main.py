@@ -20,17 +20,15 @@ tarefas = []
 prioridades_validas = ["Urgente", "Alta", "Média", "Baixa"]
 origens_validas = ["Email", "Telefone", "Chamado do Sistema"]
 
-# -----------------------------
+
 # ROTA 1 - Listar todas as tarefas
-# -----------------------------
 @app.route("/tarefas", methods=["GET"])
 def listar_tarefas():
     return jsonify(tarefas)
 
 
-# -----------------------------
+
 # ROTA 2 - Criar nova tarefa
-# -----------------------------
 @app.route("/tarefas", methods=["POST"])
 def criar_tarefa():
     dados = request.get_json()
@@ -57,9 +55,8 @@ def criar_tarefa():
     return jsonify({"mensagem": "Tarefa criada com sucesso!", "tarefa": nova_tarefa}), 201
 
 
-# -----------------------------
+
 # ROTA 3 - Atualizar status ou prioridade
-# -----------------------------
 @app.route("/tarefas/<int:id>", methods=["PUT"])
 def atualizar_tarefa(id):
     dados = request.get_json()
@@ -76,9 +73,8 @@ def atualizar_tarefa(id):
     return jsonify({"erro": "Tarefa não encontrada"}), 404
 
 
-# -----------------------------
+
 # ROTA 4 - Deletar uma tarefa
-# -----------------------------
 @app.route("/tarefas/<int:id>", methods=["DELETE"])
 def deletar_tarefa(id):
     global tarefas
@@ -86,9 +82,8 @@ def deletar_tarefa(id):
     return jsonify({"mensagem": f"Tarefa {id} removida com sucesso!"})
 
 
-# -----------------------------
+
 # ROTA 5 - Verificar tarefa urgente
-# -----------------------------
 @app.route("/tarefas/urgente", methods=["GET"])
 def pegar_urgente():
     for prioridade in prioridades_validas:
@@ -98,8 +93,7 @@ def pegar_urgente():
     return jsonify({"mensagem": "Nenhuma tarefa urgente encontrada."})
 
 
-# -----------------------------
-# EXECUÇÃO DO SERVIDOR
-# -----------------------------
+
+# Executando
 if __name__ == "__main__":
     app.run(debug=True)
