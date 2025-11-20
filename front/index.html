@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciador de Tarefas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus+SC&display=swap" rel="stylesheet">
+</head>
+<body>
+
+        <img src="logo.png" alt="">
+        <h1 class="titulo-center">Gerenciador de Tarefas</h1>
+    
+
+    
+
+    <div class="container">
+
+        <h2>Adicionar Nova Tarefa</h2>
+
+        <form id="formTarefa">
+            <input type="text" id="titulo" placeholder="Título da tarefa" required>
+
+            <select id="prioridade">
+                <option>Urgente</option>
+                <option>Alta</option>
+                <option>Média</option>
+                <option>Baixa</option>
+            </select>
+
+            <select id="origem">
+                <option>Email</option>
+                <option>Telefone</option>
+                <option>Chamado do Sistema</option>
+            </select>
+
+            <button type="submit">Adicionar</button>
+        </form>
+
+        <h2>📋 Lista de Tarefas</h2>
+        <ul id="listaTarefas"></ul>
+    </div>
+
+    <script>
+        const apiUrl = "http://127.0.0.1:5000/tarefas";
+
+        async function carregarTarefas() {
+            const res = await fetch(apiUrl);
+            const tarefas = await res.json();
+
+            const lista = document.getElementById("listaTarefas");
+            lista.innerHTML = "";
+
+            tarefas.forEach(t => {
+                const li = document.createElement("li");
+                li.classList.add(t.prioridade);
+
+                li.innerHTML = `
+                <strong>${t.titulo}</strong>
+                <span class="tag ${t.prioridade}">${t.prioridade}</span>
+                <span class="origem">${t.origem}</span>
+
+                <div class="status">Status: ${t.status}</div>
+
+                <button onclick="concluir(${t.id})">✔ Concluir</button>
+                <button class="del" onclick="deletar(${t.id})">🗑 Deletar</button>
+            `;
+
+            lista.appendChild(li);
+            });
+
+        }
+
+        async function concluir(id) {
+            await fetch(`${apiUrl}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "Concluída" })
+            });
+            carregarTarefas();
+        }
+
+        async function deletar(id) {
+            await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+            carregarTarefas();
+        }
+
+        document.getElementById("formTarefa").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const nova = {
+                titulo: document.getElementById("titulo").value,
+                prioridade: document.getElementById("prioridade").value,
+                origem: document.getElementById("origem").value
+            };
+
+            await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(nova)
+            });
+
+            e.target.reset();
+            carregarTarefas();
+        });
+
+        carregarTarefas();
+    </script>
+
+    <footer class="site-footer" role="contentinfo" aria-label="Rodapé do site">
+        <div class="site-footer__inner">
+        <p>© <span id="anoAtual"></span> — 2025 Niccolas — Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+</body>
+</html>
